@@ -67,18 +67,11 @@ def build_model():
     return cv
     
 
-def evaluate_model(model, X_test, Y_test):
+def evaluate_model(model, X_test, Y_test, Y):
     '''This function uses prediction through the model and returns a report of info'''
     Y_pred = model.predict(X_test)
-    
-    accuracy = (Y_pred == Y_test).mean()
-    recall = recall_score(Y_test, Y_pred, average='macro')
-    pre = precision_score(Y_test, Y_pred, average='macro')
-
-    print("Recall:", recall)
-    print("Precision:", pre)
-    print("Accuracy:", accuracy)
-    print("\nBest Parameters:", model.best_params_)
+    print(classification_report(Y_test.iloc[:,1:].values, np.array([x[1:] for x in Y_pred]), 
+        target_names=Y.keys()))
     
 def save_model(model, model_filepath):
     '''This function saves the model for future use'''
@@ -102,7 +95,7 @@ def main():
         model.fit(X_train, Y_train)
         
         print('Evaluating model...')
-        evaluate_model(model, X_test, Y_test)
+        evaluate_model(model, X_test, Y_test, Y)
 
         print('Saving model...\n    MODEL: {}'.format(model_filepath))
         save_model(model, model_filepath)
